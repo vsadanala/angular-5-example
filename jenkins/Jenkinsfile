@@ -39,7 +39,7 @@ pipeline{
     stage ('build image') {
       steps{
         sh '''
-          oc start-build angular-5-example --from-dir=./dist --follow
+         oc start-build angular-5-example --wait --follow
         '''
       }
     }
