@@ -42,8 +42,9 @@ pipeline{
       steps{
         sh '''
          pwd
-         rm -rf node_modules
-         cat Dockerfile
+         /*rm -rf node_modules*/
+         cp Dockerfile /tmp/workspace/digitalrig/digitalrig-angular-example-pipeline/node_modules/.bin/
+         cd /tmp/workspace/digitalrig/digitalrig-angular-example-pipeline/node_modules/.bin/
          oc start-build angular-5-example --from-dir=. --follow
         '''
       }
