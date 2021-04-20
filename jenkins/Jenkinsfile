@@ -34,11 +34,13 @@ pipeline{
     stage ('build') {
       steps{
         sh '$(npm bin)/ng build --prod --build-optimizer'
+        sh 'pwd'
       }
     }
     stage ('build image') {
       steps{
         sh '''
+         pwd
          rm -rf node_modules
          oc start-build angular-5-example --from-dir=. --follow
         '''
