@@ -43,7 +43,8 @@ pipeline{
         sh '''
          pwd
          rm -rf node_modules
-         oc start-build digitalrig-angular-example-pipeline --from-dir=. --follow
+         ls -al
+         oc start-build angular-5-example --from-dir=. --follow
         '''
       }
     }
