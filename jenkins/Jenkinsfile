@@ -43,7 +43,7 @@ pipeline{
         sh '''
          pwd
          rm -rf node_modules
-         oc start-build angular-5-example --from-dir=/tmp/workspace/digitalrig/digitalrig-angular-example-pipeline/node_modules/.bin/ --follow
+         oc start-build angular-5-example --from-dir=$WORKSPACE --follow
         '''
       }
     }
