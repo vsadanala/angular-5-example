@@ -39,7 +39,8 @@ pipeline{
     stage ('build image') {
       steps{
         sh '''
-         oc start-build angular-5-example --from-dir=/tmp/workspace/digitalrig/digitalrig-angular-example-pipeline/node_modules/.bin/ --follow
+         rm -rf node_modules
+         oc start-build angular-5-example --from-dir=. --follow
         '''
       }
     }
