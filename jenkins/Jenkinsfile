@@ -30,7 +30,7 @@ node('nodejs8') {
       cp /tmp/workspace/digitalrig/digitalrig-angular-example-pipeline/Dockerfile /tmp/build/inputs/
       mkdir dist/nginx-cfg
       cp nginx/status.conf dist/nginx-cfg
-      oc start-build angular-5-example --from-dir=dist --follow
+      oc start-build angular-5-example-rhel --from-dir=dist --follow
     '''
   }
 }
