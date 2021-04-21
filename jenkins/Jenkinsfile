@@ -4,7 +4,7 @@ node('nodejs8') {
   }
   stage ('install modules'){
     sh '''
-      mkdir -r /tmp/build/inputs/
+      mkdir -p /tmp/build/inputs/
       npm install --verbose -d 
       npm install --save classlist.js
     '''
