@@ -29,7 +29,7 @@ node('nodejs8') {
     sh '''
       mkdir dist/nginx-cfg
       cp nginx/status.conf dist/nginx-cfg
-      oc start-build angular-5-example-rhel --from-dir=dist --follow
+      oc start-build angular-5-example-rhel --from-dir=$WORKSPACE/dist --follow
     '''
   }
 }
