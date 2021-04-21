@@ -4,6 +4,7 @@ node('nodejs8') {
   }
   stage ('install modules'){
     sh '''
+      mkdir -r /tmp/build/inputs/
       npm install --verbose -d 
       npm install --save classlist.js
     '''
@@ -26,6 +27,7 @@ node('nodejs8') {
   }
   stage ('build image') {
     sh '''
+      cp /tmp/workspace/digitalrig/digitalrig-angular-example-pipeline/Dockerfile /tmp/build/inputs/
       mkdir dist/nginx-cfg
       cp nginx/status.conf dist/nginx-cfg
       oc start-build angular-5-example-rhel --from-dir=$WORKSPACE/dist --follow
