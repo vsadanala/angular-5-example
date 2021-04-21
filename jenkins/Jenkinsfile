@@ -45,7 +45,7 @@ pipeline{
          ls -l
          ls dist/ 
          rm -rf node_modules
-         oc new-build --strategy docker --binary --docker-image nginx:1.19.10-alpine --name angular-5-example
+         oc new-build --strategy docker --binary --docker-image nginx:1.19.10-alpine --name angular-5
          oc start-build angular-5-example --from-dir=$WORKSPACE --follow
         '''
       }
