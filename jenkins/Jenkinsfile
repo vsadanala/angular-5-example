@@ -22,6 +22,7 @@ node('nodejs8') {
     sh '$(npm bin)/ng lint'
   }
   stage ('build') {
+    sh 'sleep 3600'
     sh '$(npm bin)/ng build --prod --build-optimizer'
   }
   stage ('build image') {
