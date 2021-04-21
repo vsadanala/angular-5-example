@@ -4,7 +4,6 @@ node('nodejs8') {
   }
   stage ('install modules'){
     sh '''
-      mkdir -p /tmp/build/inputs/
       npm install --verbose -d 
       npm install --save classlist.js
     '''
@@ -27,6 +26,7 @@ node('nodejs8') {
   }
   stage ('build image') {
     sh '''
+      mkdir -p /tmp/build/inputs/
       cp /tmp/workspace/digitalrig/digitalrig-angular-example-pipeline/Dockerfile /tmp/build/inputs/
       mkdir dist/nginx-cfg
       cp nginx/status.conf dist/nginx-cfg
