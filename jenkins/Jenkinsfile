@@ -36,21 +36,18 @@ node('nodejs8') {
    
   
   stage('Promote to DEV') {
-  steps {
-  script {
-  openshift.withCluster() {
-  openshift.tag("angular-5-example-rhel:latest", "angular-5-example-rhel:dev")
+    script {
+    openshift.withCluster() {
+    openshift.tag("angular-5-example-rhel:latest", "angular-5-example-rhel:dev")
   }
   }
   }
-  }
+  
  
  stage('Create DEV') {
-  steps {
-  script {
-  openshift.withCluster() {
-  openshift.newApp("angular-5-example-rhel:latest", "--name=angular-5-example-rhel-dev").narrow('svc').expose()
-  }
+    script {
+    openshift.withCluster() {
+    openshift.newApp("angular-5-example-rhel:latest", "--name=angular-5-example-rhel-dev").narrow('svc').expose()
   }
   }
   }
