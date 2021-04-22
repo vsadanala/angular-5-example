@@ -54,7 +54,7 @@ node('nodejs8') {
  stage('Create DEV') {
  script {
  openshift.withCluster() {
- openshift.newApp(demo:latest", "--name=demo-dev").narrow('svc').expose()
+ openshift.newApp("demo:latest", "--name=demo-dev").narrow('svc').expose()
  }
  }
  }
