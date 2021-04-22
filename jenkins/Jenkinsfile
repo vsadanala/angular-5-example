@@ -30,3 +30,4 @@ node('nodejs8') {
       oc start-build angular-5-example-rhel --from-dir=dist --follow
     '''
   }
+}
