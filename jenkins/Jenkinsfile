@@ -26,37 +26,12 @@ node('nodejs8') {
   }
   stage ('build image') {
     sh '''
-      mkdir -p /tmp/build/inputs/
-      cp /tmp/workspace/digitalrig/digitalrig-angular-example-pipeline/Dockerfile /tmp/build/inputs/
-      mkdir dist/nginx-cfg
       cp nginx/status.conf dist/nginx-cfg
+      oc start-build angular-5-example-rhel --from-dir=dist –follow
+      oc deploy angular-5-example-rhel  --latest
     '''
   }
    
   
- stage('Build Image') {
- script {
- openshift.withCluster() {
- openshift.selector("bc", "demo").startBuild("--from-dir=dist" , "--follow")
- }
- }
- }
-
- 
- stage('Promote to DEV') {
- script {
- openshift.withCluster() {
- openshift.tag("demo:latest", "demo:dev")
- }
- }
- }
- 
- stage('Create DEV') {
- script {
- openshift.withCluster() {
- openshift.newApp("demo:latest", "--name=demo-dev").narrow('svc').expose()
- }
- }
- }
-
+  
 }
