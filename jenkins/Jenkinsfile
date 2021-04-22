@@ -37,7 +37,7 @@ node('nodejs8') {
  stage('Build Image') {
  script {
  openshift.withCluster() {
- openshift.selector("bc", "demo").startBuild("--from-dir=dist , "--follow")
+ openshift.selector("bc", "demo").startBuild("--from-dir=dist" , "--follow")
  }
  }
  }
@@ -59,7 +59,4 @@ node('nodejs8') {
  }
  }
 
-  
-  
-  
 }
