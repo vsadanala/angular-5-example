@@ -37,6 +37,7 @@ node('nodejs8') {
   
   stage('Promote to DEV') {
     script {
+    sh 'oc get pods'
     openshift.withCluster() {
     openshift.tag("angular-5-example-rhel:latest", "angular-5-example-rhel:dev")
   }
