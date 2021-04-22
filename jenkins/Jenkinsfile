@@ -28,8 +28,7 @@ node('nodejs8') {
     sh '''
       cp nginx/status.conf dist/nginx-cfg
       oc start-build angular-5-example-rhel --from-dir=dist –follow
-      oc deploy angular-5-example-rhel  --latest
-    '''
+       '''
   }
    
   
