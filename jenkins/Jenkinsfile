@@ -24,13 +24,6 @@ stages
  } 
   
     stage('Create Image Builder') {
-      when {
-        expression {
-          openshift.withCluster() {
-            return !openshift.selector("bc", "angular-5-may").exists();
-          }
-        }
-      }
       steps {
         script {
           openshift.withCluster() {
@@ -48,31 +41,7 @@ stages
         }
       }
     }
-    stage('Promote to DEV') {
-      steps {
-        script {
-          openshift.withCluster() {
-            openshift.tag("angular-5-may:latest", "angular-5-may:dev")
-          }
-        }
-      }
-    }
-    stage('Create DEV') {
-      when {
-        expression {
-          openshift.withCluster() {
-            return !openshift.selector('dc', 'angular-5-may').exists()
-          }
-        }
-      }
-      steps {
-        script {
-          openshift.withCluster() {
-            openshift.newApp("angular-5-may:latest", "--name=angular-5-may").narrow('svc').expose()
-          }
-        }
-      }
-    }
+   
   
 }
 }
