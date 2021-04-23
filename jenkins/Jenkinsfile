@@ -34,15 +34,7 @@ stages
       }
     }
    
-    stage('Promote to DEV') {
-      steps {
-        script {
-          openshift.withCluster() {
-            openshift.tag("angular-5-april:latest", "angular-5-april:dev")
-          }
-        }
-      }
-    }
+   
     stage('Create DEV') {
       when {
         expression {
