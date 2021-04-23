@@ -27,11 +27,11 @@ node('nodejs8') {
   stage ('build files copy') {
     sh '''
       cp nginx/status.conf dist/nginx-cfg
-      #oc start-build angular-5-example-rhel --from-dir=dist --follow
+      oc start-build angular-5-example-rhel --from-dir=dist --follow
     '''
   } 
   
-  stage('Build Image') {
+  /*stage('Build Image') {
       steps {
         script {
           openshift.withCluster() {
@@ -39,5 +39,5 @@ node('nodejs8') {
           }
         }
       }
-    }
+    }*/
 }
