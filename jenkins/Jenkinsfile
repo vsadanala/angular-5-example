@@ -36,17 +36,10 @@ stages
    
    
     stage('Create DEV') {
-      when {
-        expression {
-          openshift.withCluster() {
-            return !openshift.selector('dc', 'angular-5-april-deployment').exists()
-          }
-        }
-      }
       steps {
         script {
           openshift.withCluster() {
-            openshift.newApp("angular-5-april:latest", "--name=angular-5-april-deployment").narrow('svc').expose()
+            openshift.newApp("angular-5-april", "--name=angular-5-april-deployment").narrow('svc').expose()
           }
         }
       }
