@@ -40,7 +40,7 @@ stages
         script {
           openshift.withCluster() {
             openshift.withProject() {
-        def app = openshift.newApp("image-registry.openshift-image-registry.svc:5000/digitalrig/angular-5-april","--name=angular-5-april-deployment")
+        def app = openshift.newApp("image-registry.openshift-image-registry.svc:5000/digitalrig/angular-5-april")
         def dc = app.narrow('dc')
         def dcmap = dc.object()
         dcmap.remove('status')
