@@ -4,25 +4,14 @@ agent {
   }
 stages
   {
-  stage ('checkout') {
-    checkout scm
-  }
+  
   stage ('install modules'){
     sh '''
       npm install --verbose -d 
       npm install --save classlist.js
     '''
   }
-  try{
-    stage ('test') {
-      sh '''
-        ls -l /opt/google/chrome/chrome-sandbox
-        $(npm bin)/ng test --single-run --browsers Chrome_no_sandbox
-      '''
-    }
-  } finally {
-    junit "test-results.xml"
-  }
+
   stage ('code quality'){
     sh '$(npm bin)/ng lint'
   }
@@ -47,4 +36,4 @@ stages
     }*/
 }
 }
-
+}
