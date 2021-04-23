@@ -24,10 +24,21 @@ node('nodejs8') {
   stage ('build') {
     sh '$(npm bin)/ng build --prod --build-optimizer'
   }
-  stage ('build image') {
+  /*stage ('build image') {
     sh '''
       cp nginx/status.conf dist/nginx-cfg
       oc start-build angular-5-example-rhel --from-dir=dist --follow
     '''
-  }
+  } */
+  
+  stage('Build Image') {
+      steps {
+        sh 'cp nginx/status.conf dist/nginx-cfg'
+        script {
+          openshift.withCluster() {
+            openshift.selector("bc", "angular-5-example-rhel").startBuild("--from-dir=dist", "follow")
+          }
+        }
+      }
+    }
 }
