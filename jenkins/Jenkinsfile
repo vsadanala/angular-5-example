@@ -39,8 +39,41 @@ stages
       steps {
         script {
           openshift.withCluster() {
-            openshift.newApp("angular-5-april", "--name=angular-5-april-deployment").narrow('svc').expose()
-          }
+    openshift.withProject() {
+        def app = openshift.newApp('image-registry.openshift-image-registry.svc:5000/digitalrig/angular-5-april')
+        def dcpatch = [
+               "metadata":[
+                   "name":"angular-5-april-deployment",
+                   "namespace":"digitalrig"
+            ],
+               "apiVersion":"apps/v1",
+               "kind":"Deployment",
+               "spec":[
+                   "template":[
+                       "metadata":[:],
+                       "spec":[
+                           "containers":[
+                                 ["image":"image-registry.openshift-image-registry.svc:5000/digitalrig/angular-5-april",
+                                  "name":"angular",
+                                  "resources":[:],
+                                  "ports":[
+                                       ["name":"jolokia",
+                                        "containerPort":8080,
+                                        "protocol":"TCP"
+                                        ]
+                                       ]
+                                  ]
+                           ],
+                           "securityContext":[:],
+                       ]
+                   ]
+                   ]
+               ]
+    
+        openshift.apply(dcpatch)
+        
+    }
+}
         }
       }
     }
