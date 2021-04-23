@@ -15,58 +15,84 @@ stages
   stage ('Build App') {
   steps {
     sh '$(npm bin)/ng build --prod --build-optimizer'
-  }
- }
-  stage ('build files copy') {
-   steps {
     sh 'cp nginx/status.conf dist/nginx-cfg'
   }
- } 
+ }
   
-    
+    stage('Create Image Builder') {
+      when {
+        expression {
+          openshift.withCluster() {
+            return !openshift.selector("bc", "saimaster").exists();
+          }
+        }
+      }
+      steps {
+        script {
+          openshift.withCluster() {
+            openshift.newBuild("--name=saimaster", "--image-stream=registry.access.redhat.com/rhscl/nginx-112-rhel7", "--binary")
+          }
+        }
+      }
+    }
     stage('Build Image') {
       steps {
         script {
           openshift.withCluster() {
-            openshift.selector("bc", "angular-5-april").startBuild("--from-dir=dist", "--wait")
+            openshift.selector("bc", "saimaster").startBuild("--from-dir=dist", "--wait")
           }
         }
       }
     }
-   
-   
-    stage('Create DEV') {
+    stage('Promote to DEV') {
       steps {
         script {
           openshift.withCluster() {
-            openshift.withProject() {
-        def app = openshift.newApp("image-registry.openshift-image-registry.svc:5000/digitalrig/angular-5-april")
-        def dc = app.narrow('dc')
-        def dcmap = dc.object()
-        dcmap.remove('status')
-        dcmap.metadata.remove('annotations')
-        dcmap.metadata.remove('labels')
-        dcmap.metadata.remove('creationTimestamp')
-        dcmap.metadata.remove('generation')
-        dcmap.metadata.remove('resourceVersion')
-        dcmap.metadata.remove('selfLink')
-        dcmap.metadata.remove('uid')
-        dcmap.spec.remove('replicas')
-        dcmap.spec.remove('revisionHistoryLimit')
-        dcmap.spec.remove('selector')
-        dcmap.spec.remove('strategy')
-        dcmap.spec.remove('test')
-        dcmap.spec.remove('triggers')
-        dcmap.spec.template.spec.containers[0].ports[0].name = "jolokia"
-        echo "${dcmap}"
-        
-        openshift.apply(dcmap)
-        
-    }
+            openshift.tag("saimaster:latest", "saimaster:dev")
           }
         }
       }
     }
-  
-}
+    stage('Create DEV') {
+      when {
+        expression {
+          openshift.withCluster() {
+            return !openshift.selector('dc', 'saimaster-dev').exists()
+          }
+        }
+      }
+      steps {
+        script {
+          openshift.withCluster() {
+            openshift.newApp("saimaster:latest", "--name=saimaster-dev").narrow('svc').expose()
+          }
+        }
+      }
+    }
+    stage('Promote STAGE') {
+      steps {
+        script {
+          openshift.withCluster() {
+            openshift.tag("saimaster:dev", "saimaster:stage")
+          }
+        }
+      }
+    }
+    stage('Create STAGE') {
+      when {
+        expression {
+          openshift.withCluster() {
+            return !openshift.selector('dc', 'saimaster-stage').exists()
+          }
+        }
+      }
+      steps {
+        script {
+          openshift.withCluster() {
+            openshift.newApp("saimaster:stage", "--name=saimaster-stage").narrow('svc').expose()
+          }
+        }
+      }
+    }
+  }
 }
