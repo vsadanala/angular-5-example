@@ -1,3 +1,5 @@
+
+pipeline {
 node('nodejs8') {
   stage ('checkout') {
     checkout scm
@@ -40,4 +42,5 @@ node('nodejs8') {
         }
       }
     }*/
+}
 }
