@@ -27,14 +27,14 @@ stages
       when {
         expression {
           openshift.withCluster() {
-            return !openshift.selector("bc", "angular-5-example-rhel2").exists();
+            return !openshift.selector("bc", "angular-5-may").exists();
           }
         }
       }
       steps {
         script {
           openshift.withCluster() {
-            openshift.newBuild("--name=angular-5-example-rhel2", "--image-stream=registry.access.redhat.com/rhscl/nginx-112-rhel7", "--binary")
+            openshift.newBuild("--name=angular-5-may", "--image-stream=registry.access.redhat.com/rhscl/nginx-112-rhel7", "--binary")
           }
         }
       }
@@ -43,7 +43,7 @@ stages
       steps {
         script {
           openshift.withCluster() {
-            openshift.selector("bc", "angular-5-example-rhel2").startBuild("--from-dir=dist", "--wait")
+            openshift.selector("bc", "angular-5-may").startBuild("--from-dir=dist", "--wait")
           }
         }
       }
@@ -52,7 +52,7 @@ stages
       steps {
         script {
           openshift.withCluster() {
-            openshift.tag("angular-5-example-rhel2:latest", "angular-5-example-rhel2:dev")
+            openshift.tag("angular-5-may:latest", "angular-5-may:dev")
           }
         }
       }
@@ -61,14 +61,14 @@ stages
       when {
         expression {
           openshift.withCluster() {
-            return !openshift.selector('dc', 'angular-5-example-rhel2-dev').exists()
+            return !openshift.selector('dc', 'angular-5-may').exists()
           }
         }
       }
       steps {
         script {
           openshift.withCluster() {
-            openshift.newApp("angular-5-example-rhel2:latest", "--name=angular-5-example-rhel2-dev").narrow('svc').expose()
+            openshift.newApp("angular-5-may:latest", "--name=angular-5-may").narrow('svc').expose()
           }
         }
       }
