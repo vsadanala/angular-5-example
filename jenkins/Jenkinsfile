@@ -35,7 +35,7 @@ node('nodejs8') {
       steps {
         script {
           openshift.withCluster() {
-            openshift.selector("bc", "angular-5-example-rhel").startBuild("--from-dir=dist", "--follow")
+            openshift.selector("bc", "angular-5-example-rhel").startBuild("--from-dir=dist", "--wait")
           }
         }
       }
