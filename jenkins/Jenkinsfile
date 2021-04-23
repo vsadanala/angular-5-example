@@ -1,53 +1,64 @@
-pipeline{
-  agent { label 'nodejs8' }
-  stages{
-    stage ('checkout'){
-      steps{
-        checkout scm
-      }
-    }
-    stage ('install modules'){
-      steps{
-        sh '''
-          npm install --verbose -d 
-          npm install --save classlist.js
-        '''
-      }
-    }
-    stage ('test'){
-      steps{
-        sh '''
-          $(npm bin)/ng test --single-run --browsers Chrome_no_sandbox
-        '''
-      }
-      post {
-          always {
-            junit "test-results.xml"
-          }
-      }
-    }
-    stage ('code quality'){
-      steps{
-        sh '$(npm bin)/ng lint'
-      }
-    }
-    stage ('build') {
-      steps{
-        sh '$(npm bin)/ng build --prod --build-optimizer'
-        sh 'pwd'
-        sh 'ls -l'
-      }
-    }
-    stage ('build image') {
-      steps{
-        sh '''
-         pwd
-         ls -l
-         ls dist/ 
-         rm -rf node_modules
-         oc start-build angular-5-example-nginx --from-dir=$WORKSPACE --follow
-        '''
-      }
-    }
+pipeline {
+agent {
+      label 'nodejs8'
   }
+stages
+  {
+  stage ('install modules'){
+   steps {
+    sh '''
+      npm install --verbose -d 
+      npm install --save classlist.js
+    '''
+  }
+ }
+  stage ('Build App') {
+  steps {
+    sh '$(npm bin)/ng build --prod --build-optimizer'
+  }
+ }
+  stage ('build copy files') {
+   steps {
+      sh '''
+      cp nginx/status.conf dist/nginx-cfg
+     '''
+  }
+ } 
+  
+   stage('Build Image') {
+      steps {
+        script {
+          openshift.withCluster() {
+            openshift.selector("bc", "angular-5-example-rhel").startBuild("--from-dir=dist", "--wait")
+          }
+        }
+      }
+    }
+    stage('Promote to DEV') {
+      steps {
+        script {
+          openshift.withCluster() {
+            openshift.tag("angular-5-example-rhel:latest", "angular-5-example-rhel:dev")
+          }
+        }
+      }
+    }
+    stage('Create DEV') {
+      when {
+        expression {
+          openshift.withCluster() {
+            return !openshift.selector('dc', 'angular-5-example-rhel-dev').exists()
+          }
+        }
+      }
+      steps {
+        script {
+          openshift.withCluster() {
+            openshift.newApp("angular-5-example-rhel:latest", "--name=angular-5-example-rhel-dev").narrow('svc').expose()
+          }
+        }
+      }
+    }
+  
+}
 }
