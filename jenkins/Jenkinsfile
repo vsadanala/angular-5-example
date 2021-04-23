@@ -4,36 +4,75 @@ agent {
   }
 stages
   {
-  
   stage ('install modules'){
+   steps {
     sh '''
       npm install --verbose -d 
       npm install --save classlist.js
     '''
   }
-
-  stage ('code quality'){
-    sh '$(npm bin)/ng lint'
-  }
-  stage ('build') {
+ }
+  stage ('Build App') {
+  steps {
     sh '$(npm bin)/ng build --prod --build-optimizer'
   }
+ }
   stage ('build files copy') {
-    sh '''
-      cp nginx/status.conf dist/nginx-cfg
-      oc start-build angular-5-example-rhel --from-dir=dist --follow
-    '''
-  } 
+   steps {
+    sh 'cp nginx/status.conf dist/nginx-cfg'
+  }
+ } 
   
-  /*stage('Build Image') {
-      steps {
-        script {
+    stage('Create Image Builder') {
+      when {
+        expression {
           openshift.withCluster() {
-            openshift.selector("bc", "angular-5-example-rhel").startBuild("--from-dir=dist", "--wait")
+            return !openshift.selector("bc", "angular-5-example-rhel2").exists();
           }
         }
       }
-    }*/
+      steps {
+        script {
+          openshift.withCluster() {
+            openshift.newBuild("--name=angular-5-example-rhel2", "--image-stream=registry.access.redhat.com/rhscl/nginx-112-rhel7", "--binary")
+          }
+        }
+      }
+    }
+    stage('Build Image') {
+      steps {
+        script {
+          openshift.withCluster() {
+            openshift.selector("bc", "angular-5-example-rhel2").startBuild("--from-dir=dist", "--wait")
+          }
+        }
+      }
+    }
+    stage('Promote to DEV') {
+      steps {
+        script {
+          openshift.withCluster() {
+            openshift.tag("angular-5-example-rhel2:latest", "angular-5-example-rhel2:dev")
+          }
+        }
+      }
+    }
+    stage('Create DEV') {
+      when {
+        expression {
+          openshift.withCluster() {
+            return !openshift.selector('dc', 'angular-5-example-rhel2-dev').exists()
+          }
+        }
+      }
+      steps {
+        script {
+          openshift.withCluster() {
+            openshift.newApp("angular-5-example-rhel2:latest", "--name=angular-5-example-rhel2-dev").narrow('svc').expose()
+          }
+        }
+      }
+    }
+  
 }
 }
-
