@@ -36,7 +36,7 @@ node('nodejs8') {
         sh 'cp nginx/status.conf dist/nginx-cfg'
         script {
           openshift.withCluster() {
-            openshift.selector("bc", "angular-5-example-rhel").startBuild("--from-dir=dist", "follow")
+            openshift.selector("bc", "angular-5-example-rhel").startBuild("--from-dir=dist", "--follow")
           }
         }
       }
