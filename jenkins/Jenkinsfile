@@ -23,20 +23,12 @@ stages
   }
  } 
   
-    stage('Create Image Builder') {
-      steps {
-        script {
-          openshift.withCluster() {
-            openshift.newBuild("--name=angular-5-may", "--image-stream=registry.access.redhat.com/rhscl/nginx-112-rhel7", "--binary")
-          }
-        }
-      }
-    }
+    
     stage('Build Image') {
       steps {
         script {
           openshift.withCluster() {
-            openshift.selector("bc", "angular-5-may").startBuild("--from-dir=dist", "--wait")
+            openshift.selector("bc", "angular-5-april").startBuild("--from-dir=dist", "--wait")
           }
         }
       }
