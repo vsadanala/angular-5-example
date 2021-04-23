@@ -39,41 +39,31 @@ stages
       steps {
         script {
           openshift.withCluster() {
-    openshift.withProject() {
-        def app = openshift.newApp('image-registry.openshift-image-registry.svc:5000/digitalrig/angular-5-april')
-        def dcpatch = [
-               "metadata":[
-                   "name":"angular-5-april-deployment",
-                   "namespace":"digitalrig"
-            ],
-               "apiVersion":"apps/v1",
-               "kind":"Deployment",
-               "spec":[
-                   "template":[
-                       "metadata":[:],
-                       "spec":[
-                           "containers":[
-                                 ["image":"image-registry.openshift-image-registry.svc:5000/digitalrig/angular-5-april",
-                                  "name":"angular",
-                                  "resources":[:],
-                                  "ports":[
-                                       ["name":"jolokia",
-                                        "containerPort":8080,
-                                        "protocol":"TCP"
-                                        ]
-                                       ]
-                                  ]
-                           ],
-                           "securityContext":[:],
-                       ]
-                   ]
-                   ]
-               ]
-    
-        openshift.apply(dcpatch)
+            openshift.withProject() {
+        def app = openshift.newApp("image-registry.openshift-image-registry.svc:5000/digitalrig/angular-5-april","--name=angular-5-april-deployment")
+        def dc = app.narrow('dc')
+        def dcmap = dc.object()
+        dcmap.remove('status')
+        dcmap.metadata.remove('annotations')
+        dcmap.metadata.remove('labels')
+        dcmap.metadata.remove('creationTimestamp')
+        dcmap.metadata.remove('generation')
+        dcmap.metadata.remove('resourceVersion')
+        dcmap.metadata.remove('selfLink')
+        dcmap.metadata.remove('uid')
+        dcmap.spec.remove('replicas')
+        dcmap.spec.remove('revisionHistoryLimit')
+        dcmap.spec.remove('selector')
+        dcmap.spec.remove('strategy')
+        dcmap.spec.remove('test')
+        dcmap.spec.remove('triggers')
+        dcmap.spec.template.spec.containers[0].ports[0].name = "jolokia"
+        echo "${dcmap}"
+        
+        openshift.apply(dcmap)
         
     }
-}
+          }
         }
       }
     }
