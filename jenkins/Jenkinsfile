@@ -1,6 +1,9 @@
-
 pipeline {
-node('nodejs8') {
+agent {
+      label 'nodejs8'
+  }
+stages
+  {
   stage ('checkout') {
     checkout scm
   }
@@ -42,5 +45,6 @@ node('nodejs8') {
         }
       }
     }*/
+}
 }
 }
