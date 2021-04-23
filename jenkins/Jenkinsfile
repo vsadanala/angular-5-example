@@ -34,6 +34,31 @@ stages
       }
     }
    
+    stage('Promote to DEV') {
+      steps {
+        script {
+          openshift.withCluster() {
+            openshift.tag("angular-5-april:latest", "angular-5-april:dev")
+          }
+        }
+      }
+    }
+    stage('Create DEV') {
+      when {
+        expression {
+          openshift.withCluster() {
+            return !openshift.selector('dc', 'angular-5-april-deployment').exists()
+          }
+        }
+      }
+      steps {
+        script {
+          openshift.withCluster() {
+            openshift.newApp("angular-5-april:latest", "--name=angular-5-april-deployment").narrow('svc').expose()
+          }
+        }
+      }
+    }
   
 }
 }
