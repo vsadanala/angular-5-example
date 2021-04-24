@@ -29,7 +29,7 @@ stages
         }
       }
     }
-    /*stage('Promote to DEV') {
+    stage('Promote to DEV') {
       steps {
         script {
           openshift.withCluster() {
@@ -38,7 +38,7 @@ stages
         }
       }
     }
-    stage('Create DEV') {
+   /* stage('Create DEV') {
       when {
         expression {
           openshift.withCluster() {
