@@ -25,14 +25,15 @@ stages
           openshift.withCluster() {
             openshift.selector("bc", "saimaster").startBuild("--from-dir=dist", "--wait")
           }
+          sh 'echo "image build success"'
         }
       }
     }
-    stage('Promote to DEV') {
+    /*stage('Promote to DEV') {
       steps {
         script {
           openshift.withCluster() {
-            openshift.tag("saimaster:latest", "saimaster:dev")
+            openshift.tag("saimaster:latest","saimaster:dev")
           }
         }
       }
@@ -41,42 +42,18 @@ stages
       when {
         expression {
           openshift.withCluster() {
-            return !openshift.selector('dc', 'saimaster-dev').exists()
+            return !openshift.selector('dc','saimaster-dev').exists()
           }
         }
       }
       steps {
         script {
           openshift.withCluster() {
-            openshift.newApp("saimaster:latest", "--name=saimaster-dev").narrow('svc').expose()
+            openshift.newApp("saimaster:latest","--name=saimaster-dev").narrow('svc').expose()
           }
         }
       }
     }
-    stage('Promote STAGE') {
-      steps {
-        script {
-          openshift.withCluster() {
-            openshift.tag("saimaster:dev", "saimaster:stage")
-          }
-        }
-      }
-    }
-    stage('Create STAGE') {
-      when {
-        expression {
-          openshift.withCluster() {
-            return !openshift.selector('dc', 'saimaster-stage').exists()
-          }
-        }
-      }
-      steps {
-        script {
-          openshift.withCluster() {
-            openshift.newApp("saimaster:stage", "--name=saimaster-stage").narrow('svc').expose()
-          }
-        }
-      }
-    }
+     */   
   }
 }
