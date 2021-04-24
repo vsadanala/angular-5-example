@@ -29,7 +29,7 @@ stages
         }
       }
     }
-    stage('Promote to DEV') {
+   /* stage('Promote to DEV') {
       steps {
         script {
           openshift.withCluster() {
@@ -39,13 +39,14 @@ stages
       }
     }
     stage('Create DEV') {
-     /* when {
+      when {
         expression {
           openshift.withCluster() {
             return !openshift.selector('dc','saimaster-dev').exists()
           }
         }
       }*/
+    stage('Create DEV') {
       steps {
         script {
           openshift.withCluster() {
