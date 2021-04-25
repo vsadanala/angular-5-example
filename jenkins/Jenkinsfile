@@ -34,7 +34,7 @@ stages
       steps {
         script {
           openshift.withCluster() {
-            openshift.tag("saimaster:latest","saimaster:dev")
+            openshift.tag("saimaster:latest","saimaster:prod")
           }
         }
       }
@@ -51,7 +51,7 @@ stages
       steps {
         script {
           openshift.withCluster() {
-            openshift.newApp("saimaster:latest","--name=saimaster-dev").narrow('svc').expose()
+            openshift.newApp("saimaster:prod","--name=saimaster-prod").narrow('svc').expose()
           }
         }
       }
