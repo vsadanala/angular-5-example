@@ -42,11 +42,11 @@ stages
       when {
         expression {
           openshift.withCluster() {
-            return !openshift.selector('dc','saimaster-dev').exists()
+            return !openshift.selector('dc','saimaster').exists()
           }
         }
       }*/
-    stage('Create DEV') {
+    stage('Create Deployment') {
       steps {
         script {
           openshift.withCluster() {
