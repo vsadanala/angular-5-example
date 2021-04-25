@@ -7,6 +7,7 @@ stages
   stage ('install modules'){
    steps {
     sh '''
+      echo 'Pulling...' + env.BRANCH_NAME
       npm install --verbose -d 
       npm install --save classlist.js
     '''
