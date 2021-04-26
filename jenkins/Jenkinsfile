@@ -20,6 +20,23 @@ stages
   }
  }
   
+    stage('Create Image Builder') {
+      when {
+        expression {
+          openshift.withCluster() {
+            return !openshift.selector("bc", "saimaster").exists();
+          }
+        }
+      }
+      steps {
+        script {
+          openshift.withCluster() {
+            openshift.newBuild("--name=saimaster", "--image-stream=registry.redhat.io/rhscl/nodejs-4-rhel7", "--binary")
+          }
+        }
+      }
+    }
+    
     stage('Build Image') {
       steps {
         script {
