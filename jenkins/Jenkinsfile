@@ -7,7 +7,6 @@ stages
   stage ('install modules'){
    steps {
     sh '''
-      echo 'Pulling...' + env.BRANCH_NAME
       npm install --verbose -d 
       npm install --save classlist.js
     '''
@@ -16,7 +15,6 @@ stages
   stage ('Build App') {
   steps {
     sh '$(npm bin)/ng build --prod --build-optimizer'
-    sh 'cp nginx/status.conf dist/nginx-cfg'
   }
  }
   
@@ -24,14 +22,14 @@ stages
       when {
         expression {
           openshift.withCluster() {
-            return !openshift.selector("bc", "saimaster").exists();
+            return !openshift.selector("bc", "frontend").exists();
           }
         }
       }
       steps {
         script {
           openshift.withCluster() {
-            openshift.newBuild("--name=saimaster", "--image-stream=registry.redhat.io/rhscl/nodejs-4-rhel7", "--binary")
+            openshift.newBuild("--name=frontend", "--image-stream=registry.redhat.io/rhscl/nodejs-4-rhel7", "--binary")
           }
         }
       }
@@ -41,7 +39,7 @@ stages
       steps {
         script {
           openshift.withCluster() {
-            openshift.selector("bc", "saimaster").startBuild("--from-dir=dist", "--wait")
+            openshift.selector("bc", "frontend").startBuild("--from-dir=dist", "--wait")
           }
           sh 'echo "image build success"'
         }
@@ -51,7 +49,7 @@ stages
       steps {
         script {
           openshift.withCluster() {
-            openshift.tag("saimaster:latest","saimaster:prod")
+            openshift.tag("frontend:latest","frontend:prod")
           }
         }
       }
@@ -60,7 +58,7 @@ stages
       when {
         expression {
           openshift.withCluster() {
-            return !openshift.selector('dc','saimaster').exists()
+            return !openshift.selector('dc','frontend').exists()
           }
         }
       }*/
@@ -68,11 +66,10 @@ stages
       steps {
         script {
           openshift.withCluster() {
-            openshift.newApp("saimaster:prod","--name=saimaster-prod").narrow('svc').expose()
+            openshift.newApp("frontend:prod","--name=frontend-prod").narrow('svc').expose()
           }
         }
       }
     }
     
   }
-}
